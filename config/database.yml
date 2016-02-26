@@ -1,0 +1,14 @@
+default: &default
+  adapter: postgresql
+  encoding: utf-8
+  pool: 5
+  username: jack
+  password: password
+
+development:
+  <<: *default
+  database: skeleton_development
+
+test: &test
+  <<: *default
+  database: skeleton_test

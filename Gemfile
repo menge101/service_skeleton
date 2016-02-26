@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+ruby '2.3.0'
+
+gem 'bcrypt'
+gem 'grape'
+gem 'grape-swagger'
+gem 'pg'
+gem 'rack'
+gem 'rake'
+gem 'sequel'
