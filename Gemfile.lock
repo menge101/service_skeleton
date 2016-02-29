@@ -49,6 +49,9 @@ GEM
       rack (>= 1.0.0)
     rake (10.4.2)
     sequel (4.31.0)
+    sequel_pg (1.6.14)
+      pg (>= 0.8.0)
+      sequel (>= 3.39.0)
     thread_safe (0.3.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
@@ -69,6 +72,7 @@ DEPENDENCIES
   rack
   rake
   sequel
+  sequel_pg
 
 BUNDLED WITH
    1.11.2
