@@ -8,3 +8,9 @@ gem 'rack'
 gem 'rake'
 gem 'sequel'
 gem 'sequel_pg'
+gem 'statsd-instrument'
+
+group :test do
+  gem 'rspec'
+  gem 'fakeweb'
+end
