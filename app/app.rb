@@ -12,7 +12,6 @@ module Skeleton
       end
     end
 
-    #192.168.99.100:8125
     StatsD.backend = StatsD::Instrument::Backends::UDPBackend.new("#{STATSD_URL}:#{STATSD_PORT}", :statsd)
     StatsD.prefix = self.to_s.downcase.gsub(/::/, '_')
     version 'v0', using: :path
