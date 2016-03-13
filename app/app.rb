@@ -20,7 +20,7 @@ module Skeleton
 
     get '/ping' do
       StatsD.increment 'ping'
-      { data: 'pong' }
+      StatsD.measure('ping') { { data: 'pong' } }
     end
   end
 end
