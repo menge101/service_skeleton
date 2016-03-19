@@ -1,6 +1,9 @@
 #ignore idea files
 .idea/*
 
+#ignore log files
+log/*
+
 #ignore project bootstrapping script
 strap_on_some_boot.sh
 

@@ -1,8 +1,12 @@
 require 'grape'
+require 'grape/middleware/logger'
+require 'logstash-logger'
 require 'statsd-instrument'
 
 module Skeleton
   class API < Grape::API
+    use Grape::Middleware::Logger, { logger: LogStashLogger.new(type: :file, path: 'log/development.log', sync: true) }
+    #LogStashLogger.new(type: :udp, host: "#{LOGSTASH_URL}", port: "#{LOGSTASH_PORT}) }
 
     def self.const_missing(name)
       if ENV.has_key?(name.to_s)
