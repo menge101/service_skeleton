@@ -13,6 +13,8 @@ gem 'sequel_pg'
 gem 'statsd-instrument'
 
 group :test do
+  gem 'bond-spy'
+  gem 'rack-test'
   gem 'rspec'
-  gem 'fakeweb'
+  gem 'simplecov', :require => false
 end

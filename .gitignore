@@ -9,3 +9,9 @@ strap_on_some_boot.sh
 
 #ignore rake cache file
 .rake_t_cache
+
+#ignore coverage files
+coverage/*
+
+#ignore rspec examples file
+spec/examples.txt
