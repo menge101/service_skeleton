@@ -12,6 +12,8 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
+    bond-spy (0.2.1)
+      neatjson (~> 0.6)
     builder (3.2.2)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
@@ -49,6 +51,7 @@ GEM
     minitest (5.8.4)
     multi_json (1.11.2)
     multi_xml (0.5.5)
+    neatjson (0.6.2)
     parser (2.3.0.7)
       ast (~> 2.2)
     pg (0.18.4)
@@ -109,6 +112,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bond-spy
   grape
   grape-middleware-logger
   grape-swagger

@@ -1,5 +1,8 @@
 ENV['RACK_ENV'] ||= 'test'
+ENV['BOND_RECONCILE'] ||= 'abort'
 
+require 'bond'
+require 'bond/spec_helper'
 require 'rack/test'
 require 'simplecov'
 SimpleCov.start

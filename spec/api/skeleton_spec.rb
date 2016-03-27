@@ -1,5 +1,6 @@
 RSpec.describe Skeleton::API do
   include Rack::Test::Methods
+  include_context :bond
 
   def app
     Skeleton::API
@@ -7,7 +8,7 @@ RSpec.describe Skeleton::API do
 
   it 'ping' do
     get '/api/v0/ping'
-    expect(last_response.status).to eq(200)
-    expect(last_response.body).to eq({ data: 'pong' }.to_json)
+    bond.spy(status: last_response.status)
+    bond.spy(body: last_response.body)
   end
 end

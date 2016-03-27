@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 ruby '2.2.4'
 
+gem 'bond-spy'
 gem 'grape'
 gem 'grape-middleware-logger'
 gem 'grape-swagger'
