@@ -76,4 +76,6 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
+
+  config.before(:suite) { Dir.glob('./log/test*.log').each { |file| `cat /dev/null > #{file}` } }
 end

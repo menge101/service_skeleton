@@ -13,10 +13,19 @@ module Skeleton
       end
     end
 
-    use Grape::Middleware::Logger, { logger: LogStashLogger.new(type: :udp, host: "#{LOGSTASH_URL}", port: "#{LOGSTASH_PORT}") }
+    if production?
+      logger = LogStashLogger.new(type: :udp, host: "#{LOGSTASH_URL}", port: "#{LOGSTASH_PORT}")
+      StatsD.backend = StatsD::Instrument::Backends::UDPBackend.new("#{STATSD_URL}:#{STATSD_PORT}", :statsd)
+    else
+      logger = LogStashLogger.new(type: :file, path: "log/#{RACK_ENV}.log", sync: true)
+      stats_logger = LogStashLogger.new(type: :file, path: "log/#{RACK_ENV}_stats.log", sync: true)
+      StatsD.backend = StatsD::Instrument::Backends::LoggerBackend.new(stats_logger)
+    end
 
-    StatsD.backend = StatsD::Instrument::Backends::UDPBackend.new("#{STATSD_URL}:#{STATSD_PORT}", :statsd)
-    StatsD.prefix = self.to_s.downcase.gsub(/::/, '_')
+    use Grape::Middleware::Logger, { logger: logger }
+
+    StatsD.prefix = self.to_s.downcase.gsub(/::/, '__')
+
     version 'v0', using: :path
     prefix 'api'
     format :json
