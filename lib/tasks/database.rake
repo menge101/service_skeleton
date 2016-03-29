@@ -27,7 +27,8 @@ def next_migration_prefix
 end
 
 CONFIG_FILE = (find_project_root + 'config/database.yml').freeze
-raise "Config file not found.  Config file must be located at project_root/#{CONFIG_FILE}" unless File.exist?(CONFIG_FILE)
+raise "Config file not found.
+Config file must be located at project_root/#{CONFIG_FILE}" unless File.exist?(CONFIG_FILE)
 CONFIG = YAML.load(File.open(CONFIG_FILE, 'r')).freeze
 ENVIRONMENT = ENV['RACK_ENV'] || 'development'
 MIGRATION_LOCATION = (find_project_root + 'db/migrate').freeze
@@ -41,7 +42,7 @@ namespace :pg do
       con = PG.connect(dbname: 'postgres')
       begin
         con.exec("CREATE USER #{CONFIG[ENVIRONMENT]['username']} WITH PASSWORD '#{CONFIG[ENVIRONMENT]['password']}'")
-      rescue PG::DuplicateObject => e
+      rescue PG::DuplicateObject
         puts "USER #{CONFIG[ENVIRONMENT]['username']} already exists"
       end
     end
@@ -63,7 +64,7 @@ namespace :pg do
       con = PG.connect(dbname: 'postgres')
       begin
         con.exec("CREATE DATABASE #{CONFIG[ENVIRONMENT]['database']} WITH OWNER #{CONFIG[ENVIRONMENT]['username']}")
-      rescue PG::DuplicateDatabase => e
+      rescue PG::DuplicateDatabase
         puts "Database #{CONFIG[ENVIRONMENT]['database']} already exists"
       rescue PG::UndefinedObject => e
         puts "#{e.message.chomp} to own DB #{CONFIG[ENVIRONMENT]['database']}"
@@ -91,9 +92,9 @@ namespace :pg do
     end
 
     desc 'Rollback the specified number of migrations'
-    task :rollback, [:count] do |t, args|
+    task :rollback, [:count] do |_t, args|
       args.with_defaults(count: 1)
-      Sequel::Migrator.run(DB, MIGRATION_LOCATION, target: (version.to_i - args[:count].to_i) )
+      Sequel::Migrator.run(DB, MIGRATION_LOCATION, target: (version.to_i - args[:count].to_i))
       Rake::Task['pg:migrations:version'].execute
     end
 
@@ -104,9 +105,9 @@ namespace :pg do
     end
 
     desc 'Generates a new database migration file'
-    task :generate, [:desc] do |t, args|
-      raise 'Database migration must have a description' if ars[:desc].nil?
-      file_prefix = "%03d" % (next_migration_prefix)
+    task :generate, [:desc] do |_t, args|
+      raise 'Database migration must have a description' if args[:desc].nil?
+      file_prefix = format('%03d', next_migration_prefix)
       file = File.new("#{MIGRATION_LOCATION}/#{file_prefix}_#{args[:desc]}", 'w+')
       file.print build_blank_migration
       file.close

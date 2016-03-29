@@ -12,9 +12,13 @@ gem 'sequel'
 gem 'sequel_pg'
 gem 'statsd-instrument'
 
+group :development do
+  gem 'rubocop', require: false
+  gem 'shotgun'
+end
+
 group :test do
-  gem 'bond-spy'
   gem 'rack-test'
   gem 'rspec'
-  gem 'simplecov', :require => false
+  gem 'simplecov', require: false
 end
