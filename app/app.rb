@@ -2,6 +2,8 @@ require 'grape'
 require 'grape/middleware/logger'
 require 'logstash-logger'
 require 'statsd-instrument'
+$LOAD_PATH.unshift(File.join(PROJECT_ROOT, 'app', 'initializers'))
+require 'db'
 
 module Skeleton
   # This class defined the API root for this service

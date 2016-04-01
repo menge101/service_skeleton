@@ -1,12 +1,14 @@
 ENV['RACK_ENV'] ||= 'test'
 ENV['BOND_RECONCILE'] ||= 'abort'
+PROJECT_ROOT = File.expand_path(File.join(__FILE__, '..', '..'))
 
 require 'bond'
 require 'bond/spec_helper'
 require 'rack/test'
 require 'simplecov'
 SimpleCov.start
-require File.expand_path('../../config/environment', __FILE__)
+$LOAD_PATH.unshift(File.expand_path(File.join(PROJECT_ROOT, 'config'), PROJECT_ROOT))
+require 'environment'
 
 RSpec.configure do |config|
   config.color = true

@@ -1,12 +1,9 @@
 # This file contains rake tasks for working with database.
 require 'yaml'
 
-def find_project_root
-  `git rev-parse --show-cdup`.chomp
-end
-
 def db_uri
   dbconf = CONFIG[ENVIRONMENT]
+  return dbconf['url'] if dbconf.key?('url')
   uri = "postgres://#{dbconf['username']}"
   uri << ":#{dbconf['password']}" if dbconf['password']
   uri << "@#{dbconf['host']}"
@@ -26,12 +23,13 @@ def next_migration_prefix
   Dir.entries(MIGRATION_LOCATION).sort.last.to_i + 1
 end
 
-CONFIG_FILE = (find_project_root + 'config/database.yml').freeze
+PROJECT_ROOT = File.expand_path(File.join(__FILE__, '..', '..'))
+CONFIG_FILE = (PROJECT_ROOT + '/config/database.yml').freeze
 raise "Config file not found.
-Config file must be located at project_root/#{CONFIG_FILE}" unless File.exist?(CONFIG_FILE)
-CONFIG = YAML.load(File.open(CONFIG_FILE, 'r')).freeze
+Config file must be located at #{PROJECT_ROOT}/#{CONFIG_FILE}" unless File.exist?(CONFIG_FILE)
+CONFIG = YAML.load_file(CONFIG_FILE).freeze
 ENVIRONMENT = ENV['RACK_ENV'] || 'development'
-MIGRATION_LOCATION = (find_project_root + 'db/migrate').freeze
+MIGRATION_LOCATION = (PROJECT_ROOT + '/db/migrate').freeze
 
 namespace :pg do
   require 'pg'
@@ -44,16 +42,20 @@ namespace :pg do
         con.exec("CREATE USER #{CONFIG[ENVIRONMENT]['username']} WITH PASSWORD '#{CONFIG[ENVIRONMENT]['password']}'")
       rescue PG::DuplicateObject
         puts "USER #{CONFIG[ENVIRONMENT]['username']} already exists"
+      else
+        puts "USER #{CONFIG[ENVIRONMENT]['username']} created"
       end
     end
 
-    desc 'Drops the database user deinfed in config/database.yml'
+    desc 'Drops the database user defined in config/database.yml'
     task :drop do
       con = PG.connect(dbname: 'postgres')
       begin
         con.exec("DROP USER IF EXISTS #{CONFIG[ENVIRONMENT]['username']}")
       rescue PG::DependentObjectsStillExist => e
         puts e.message
+      else
+        puts "#{CONFIG[ENVIRONMENT]['username']} dropped from postgres."
       end
     end
   end
@@ -69,6 +71,8 @@ namespace :pg do
       rescue PG::UndefinedObject => e
         puts "#{e.message.chomp} to own DB #{CONFIG[ENVIRONMENT]['database']}"
         puts 'Please run the postgres:users:create task first, and verify it is successful.'
+      else
+        puts "Database #{CONFIG[ENVIRONMENT]['database']} created."
       end
     end
 
@@ -76,23 +80,26 @@ namespace :pg do
     task :drop do
       con = PG.connect(dbname: 'postgres')
       con.exec("DROP DATABASE IF EXISTS #{CONFIG[ENVIRONMENT]['database']}")
+      puts "Database Database #{CONFIG[ENVIRONMENT]['database']} dropped."
     end
   end
 
   namespace :migrations do
     require 'sequel'
-    Sequel.extension :migration
-    DB = Sequel.connect(db_uri)
-    version = schema_version DB
 
     desc 'Executes all unrun migrations'
     task :migrate do
+      Sequel.extension :migration
+      DB = Sequel.connect(db_uri)
       Sequel::Migrator.run(DB, MIGRATION_LOCATION)
       Rake::Task['pg:migrations:version'].execute
     end
 
     desc 'Rollback the specified number of migrations'
     task :rollback, [:count] do |_t, args|
+      Sequel.extension :migration
+      DB = Sequel.connect(db_uri)
+      version = schema_version DB
       args.with_defaults(count: 1)
       Sequel::Migrator.run(DB, MIGRATION_LOCATION, target: (version.to_i - args[:count].to_i))
       Rake::Task['pg:migrations:version'].execute
@@ -100,6 +107,8 @@ namespace :pg do
 
     desc 'Rollback all migrations'
     task :reset do
+      Sequel.extension :migration
+      DB = Sequel.connect(db_uri)
       Sequel::Migrator.run(DB, MIGRATION_LOCATION, target: 0)
       Rake::Task['pg:migrations:version'].execute
     end
@@ -108,7 +117,7 @@ namespace :pg do
     task :generate, [:desc] do |_t, args|
       raise 'Database migration must have a description' if args[:desc].nil?
       file_prefix = format('%03d', next_migration_prefix)
-      file = File.new("#{MIGRATION_LOCATION}/#{file_prefix}_#{args[:desc]}", 'w+')
+      file = File.new("#{MIGRATION_LOCATION}/#{file_prefix}_#{args[:desc]}.rb", 'w+')
       file.print build_blank_migration
       file.close
     end
