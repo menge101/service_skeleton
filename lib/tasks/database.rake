@@ -23,10 +23,10 @@ def next_migration_prefix
   Dir.entries(MIGRATION_LOCATION).sort.last.to_i + 1
 end
 
-PROJECT_ROOT = File.expand_path(File.join(__FILE__, '..', '..'))
+PROJECT_ROOT = File.expand_path(File.join(__FILE__, '..', '..', '..'))
 CONFIG_FILE = (PROJECT_ROOT + '/config/database.yml').freeze
 raise "Config file not found.
-Config file must be located at #{PROJECT_ROOT}/#{CONFIG_FILE}" unless File.exist?(CONFIG_FILE)
+Config file must be located at #{CONFIG_FILE}" unless File.exist?(CONFIG_FILE)
 CONFIG = YAML.load_file(CONFIG_FILE).freeze
 ENVIRONMENT = ENV['RACK_ENV'] || 'development'
 MIGRATION_LOCATION = (PROJECT_ROOT + '/db/migrate').freeze

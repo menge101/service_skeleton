@@ -22,4 +22,5 @@ group :test do
   gem 'rack-test'
   gem 'rspec'
   gem 'simplecov', require: false
+  gem 'database_cleaner'
 end

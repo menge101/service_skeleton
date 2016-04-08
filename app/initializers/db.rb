@@ -10,6 +10,5 @@ begin
 rescue Sequel::Migrator::Error => e
   raise e unless e.message == 'No target version available, probably because no migration files found or filenames don'\
                               "'t follow the migration filename convention"
-  # TODO: should be logged, not put.
-  puts 'No migrations were found.'
+  LOGGER.warn 'No migrations were found.'
 end

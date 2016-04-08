@@ -9,6 +9,7 @@ require 'simplecov'
 SimpleCov.start
 $LOAD_PATH.unshift(File.expand_path(File.join(PROJECT_ROOT, 'config'), PROJECT_ROOT))
 require 'environment'
+require 'database_cleaner'
 
 RSpec.configure do |config|
   config.color = true
@@ -82,5 +83,15 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 
-  config.before(:suite) { Dir.glob('./log/test*.log').each { |file| `cat /dev/null > #{file}` } }
+  config.before(:suite) do
+    Dir.glob('./log/test*.log').each { |file| `cat /dev/null > #{file}` }
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
+  end
 end

@@ -17,6 +17,7 @@ GEM
     builder (3.2.2)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
+    database_cleaner (1.5.1)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
@@ -113,6 +114,7 @@ PLATFORMS
 
 DEPENDENCIES
   bond-spy
+  database_cleaner
   grape
   grape-middleware-logger
   grape-swagger
