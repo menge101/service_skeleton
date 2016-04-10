@@ -8,7 +8,10 @@ Sequel.extension :migration
 begin
   Sequel::Migrator.check_current(DB, MIGRATION_LOC)
 rescue Sequel::Migrator::Error => e
-  raise e unless e.message == 'No target version available, probably because no migration files found or filenames don'\
-                              "'t follow the migration filename convention"
-  LOGGER.warn 'No migrations were found.'
+  if !e.message == "no migration files found or filenames don't follow the migration filename convention"
+    puts "Using #{DB_CONFIG['database']} DB"
+    raise e
+  else
+    LOGGER.warn 'No migrations were found.'
+  end
 end
