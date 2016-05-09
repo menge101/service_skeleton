@@ -14,3 +14,7 @@ development:
 test: &test
   <<: *default
   database: skeleton_test
+
+production:
+  <<: *default
+  database: skeleton
